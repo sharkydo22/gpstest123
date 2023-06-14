@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,19 +17,22 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5Fa_O6ltlrs_4oI6cMSkvePH-_AwMQX0"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script>
+    var map;
+    var marker;
+
     function initMap() {
       var coordinates = { lat: 23.555220092574118, lng: 120.47416956760017 }; // 使用特定的座標
       var mapOptions = {
         center: coordinates,
         zoom: 10
       };
-      var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-      var marker = new google.maps.Marker({
+      map = new google.maps.Map(document.getElementById("map"), mapOptions);
+      marker = new google.maps.Marker({
         position: coordinates,
         map: map
       });
 
-      setInterval(updateCoordinates, 5000); // 每10秒更新一次座標
+      setInterval(updateCoordinates, 1000); // 每1秒更新一次座標
     }
 
     function updateCoordinates() {
@@ -38,15 +40,14 @@
         url: "https://api.thingspeak.com/channels/B45SZAJXAY325IL0/feeds.json?api_key=FYIEEM8U6MQ0FHA2&results=1",
         dataType: "json",
         success: function(data) {
-          var latitude = data.feeds[0].field1; // 取得最新的緯度資訊
-          var longitude = data.feeds[0].field2; // 取得最新的經度資訊
+          var latitude = data.feeds[0].field2; // 取得最新的緯度資訊 (從圖表二抓取)
+          var longitude = data.feeds[0].field1; // 取得最新的經度資訊 (從圖表一抓取)
 
           var coordinatesElement = document.getElementById("coordinates");
           coordinatesElement.textContent = "Latitude: " + latitude + ", Longitude: " + longitude;
 
           // 更新地圖標記位置
           var coordinates = { lat: parseFloat(latitude), lng: parseFloat(longitude) };
-          var map = new google.maps.Map(document.getElementById("map"));
           map.setCenter(coordinates);
           marker.setPosition(coordinates);
         }
